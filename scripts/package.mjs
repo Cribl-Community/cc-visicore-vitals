@@ -3,10 +3,10 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pipeline } from 'node:stream/promises';
+import { parseArgs } from 'node:util';
 import { createAppPack } from './pkgutil.mjs';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const rootDir = join(__dirname, '..');
+const rootDir = join(import.meta.dirname, '..');
 const buildOutDir = join(rootDir, 'build');
 const packageJsonPath = join(rootDir, 'package.json');
 const semverPattern = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
@@ -27,35 +27,28 @@ function formatVersion(version) {
   return `${version.major}.${version.minor}.${version.patch}`;
 }
 
-function parseArgs(args) {
+function processArgs() {
+  const args = parseArgs({
+    options: {
+      minor: { type: 'boolean' },
+      major: { type: 'boolean' },
+      version: { type: 'string' },
+    },
+  });
   let bump = 'patch';
   let explicitVersion;
-  for (let i = 0; i < args.length; i += 1) {
-    const arg = args[i];
-    if (arg === '--minor') {
-      bump = 'minor';
-    } else if (arg === '--major') {
-      bump = 'major';
-    } else if (arg === '--version') {
-      explicitVersion = args[i + 1];
-      i += 1;
-      if (!explicitVersion) {
-        throw new Error('--version requires a value in X.Y.Z format.');
-      }
-    } else if (arg.startsWith('--version=')) {
-      explicitVersion = arg.slice('--version='.length);
-      if (!explicitVersion) {
-        throw new Error('--version requires a value in X.Y.Z format.');
-      }
-    } else {
-      throw new Error(`Unknown package option "${arg}". Use --minor, --major, or --version X.Y.Z.`);
-    }
+  if (args.values.minor) {
+    bump = 'minor';
+  } else if (args.values.major) {
+    bump = 'major';
+  } else if (args.values.version) {
+    explicitVersion = args.values.version;
   }
   return { bump, explicitVersion };
 }
 
-function nextVersion(currentVersion, args) {
-  const { bump, explicitVersion } = parseArgs(args);
+function nextVersion(currentVersion) {
+  const { bump, explicitVersion } = processArgs();
   if (explicitVersion) {
     parseVersion(explicitVersion);
     return explicitVersion;
@@ -72,13 +65,13 @@ function nextVersion(currentVersion, args) {
 }
 
 const packageInfo = JSON.parse(await readFile(packageJsonPath, 'utf8'));
-packageInfo.version = nextVersion(packageInfo.version || '0.0.0', process.argv.slice(2));
+packageInfo.version = nextVersion(packageInfo.version || '0.0.0');
 await writeFile(packageJsonPath, `${JSON.stringify(packageInfo, null, 2)}\n`);
 
 const tgzName = `${packageInfo.name || 'app'}-${packageInfo.version}.tgz`;
 const tgzPath = join(buildOutDir, tgzName);
 await mkdir(buildOutDir, { recursive: true });
 const { closePromise, stdout } = await createAppPack(false);
-await Promise.all([ pipeline(stdout, createWriteStream(tgzPath)), closePromise ]);
+await Promise.all([pipeline(stdout, createWriteStream(tgzPath)), closePromise]);
 
 console.log(`\nPackage created: ${tgzPath}`);

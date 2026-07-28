@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run package -- --version "${GITHUB_REF_NAME#v}"
+
+      # Materialize the Cribl pack layout (static/ + default/) on the release tag
+      # so Cribl "Import from Git" (a git clone) serves the built app. Also move a
+      # rolling `latest` tag to this release for a stable import ref.
+      - name: Publish pack layout for Git install
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          node scripts/prepare-git-pack.mjs --version "${GITHUB_REF_NAME#v}"
+          git add -f static default package.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore(release): add Cribl pack layout for Git install"
+            git tag -f "${GITHUB_REF_NAME}"
+            git push origin "${GITHUB_REF_NAME}" --force
+          fi
+          git tag -f latest "${GITHUB_REF_NAME}"
+          git push origin latest --force
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/*.tgz
+          generate_release_notes: true
+          fail_on_unmatched_files: true

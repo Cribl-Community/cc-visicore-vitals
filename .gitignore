@@ -25,3 +25,7 @@ dist-ssr
 
 # Cribl app package archives
 build
+
+# Cribl Git-install pack layout (committed by release CI only)
+static
+default

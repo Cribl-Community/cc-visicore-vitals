@@ -42,7 +42,7 @@ async function runNpmBuild(cwd) {
 let packageInProgress = false;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const CRIBL_CREATE_APP_SCRIPT_VERSION = '0.2.0';
+const CRIBL_CREATE_APP_SCRIPT_VERSION = '0.3.0';
 
 async function pathExists(filePath) {
   try {
@@ -50,6 +50,44 @@ async function pathExists(filePath) {
     return true;
   } catch {
     return false;
+  }
+}
+
+/**
+ * Materialize the Cribl App Platform pack layout at the repo root for Git-based
+ * installs. Writes `static/` (from `dist/`) and `default/proxies.yml` +
+ * `default/policies.yml` (from `config/`). Run after `npm run build`; the root
+ * `package.json` is left untouched (it already carries the app metadata).
+ *
+ * @param {string} [_versionOverride] Accepted for CLI symmetry; version is read
+ *   from the repo-root `package.json` at install time and is not written here.
+ */
+export async function prepareGitPackLayout(_versionOverride = undefined) {
+  const rootDir = join(__dirname, '..');
+  const distDir = join(rootDir, 'dist');
+  const proxiesPath = join(rootDir, 'config', 'proxies.yml');
+  const policiesPath = join(rootDir, 'config', 'policies.yml');
+  const staticDir = join(rootDir, 'static');
+  const defaultDir = join(rootDir, 'default');
+
+  if (!(await pathExists(distDir))) {
+    throw new Error('dist folder not found. Run npm run build first.');
+  }
+
+  if (await pathExists(staticDir)) {
+    await rm(staticDir, { recursive: true, force: true });
+  }
+  await mkdir(staticDir, { recursive: true });
+  await mkdir(defaultDir, { recursive: true });
+
+  await cp(distDir, staticDir, { recursive: true });
+
+  if (await pathExists(proxiesPath)) {
+    await cp(proxiesPath, join(defaultDir, 'proxies.yml'));
+  }
+
+  if (await pathExists(policiesPath)) {
+    await cp(policiesPath, join(defaultDir, 'policies.yml'));
   }
 }
 
