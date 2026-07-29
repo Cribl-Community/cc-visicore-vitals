@@ -2,7 +2,7 @@
 
 **Health monitoring for Cribl deployments.**
 
-![CriblVision — Deployment Overview](docs/overview.png)
+![CriblVision — Deployment Overview](docs/overview-1.3.0.png)
 
 ## Install
 
