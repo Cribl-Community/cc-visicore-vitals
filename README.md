@@ -1,17 +1,17 @@
-# Vitals
+# CriblVision
 
 **Health monitoring for Cribl deployments.**
 
-![Vitals — Deployment Overview](docs/overview.png)
+![CriblVision — Deployment Overview](docs/overview.png)
 
 ## Install
 
-Grab the app archive from the [latest release](https://github.com/VisiCore/CC-VisiCore-Vitals/releases/latest),
+Grab the app archive from the [latest release](https://github.com/Cribl-Community/cc-visicore-criblvision/releases/latest),
 then in Cribl go to **Manage → App Platform → Add App → Import from File** and upload the
 `.tgz`. Alternatively, use **Import from URL** with the release asset link directly:
 
 ```
-https://github.com/VisiCore/CC-VisiCore-Vitals/releases/download/v1.2.2/cc-visicore-vitals-1.2.2.tgz
+https://github.com/Cribl-Community/cc-visicore-criblvision/releases/download/v1.2.2/cc-visicore-vitals-1.2.2.tgz
 ```
 
 Once installed and shared, the app runs on live data automatically — no configuration needed.

@@ -1,5 +1,5 @@
 {
-  "name": "cc-visicore-vitals",
+  "name": "cc-visicore-criblvision",
   "private": true,
   "version": "1.2.2",
   "type": "module",
@@ -24,7 +24,7 @@
     "typescript": "~6.0.2",
     "vite": "^8.1.1"
   },
-  "displayName": "Vitals",
+  "displayName": "CriblVision",
   "description": "Health monitoring app for Cribl deployments",
   "author": "Andrew Hendrix",
   "cribl": {

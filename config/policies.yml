@@ -1,4 +1,4 @@
-# Product API access declaration for Vitals.
+# Product API access declaration for CriblVision.
 # At install time, admins see exactly which platform resources the app will use.
 # All monitoring calls are read-only; the only writes are Notification CRUD,
 # which powers the Email Alerts page (native Cribl notifications).
@@ -63,7 +63,7 @@ policies:
   - object: '/m/:gid/jobs/*'
     actions: ['GET']
 
-  # Email Alerts page — Vitals manages native Cribl Notifications wired to the
+  # Email Alerts page — CriblVision manages native Cribl Notifications wired to the
   # SMTP notification target; Cribl evaluates conditions and sends the email.
   - object: '/notification-targets'
     actions: ['GET']

@@ -820,7 +820,7 @@ export async function getJobErrors(group: string, jobId: string): Promise<JobErr
 
 export type NotificationWithGroup = CriblNotification & { group: string };
 
-const DEMO_ALERTS_KEY = 'vitals-demo-alerts';
+const DEMO_ALERTS_KEY = 'criblvision-demo-alerts';
 
 function loadDemoAlerts(): NotificationWithGroup[] {
   try {
@@ -831,7 +831,7 @@ function loadDemoAlerts(): NotificationWithGroup[] {
   }
   return [
     {
-      id: 'vitals-unhealthy-to-splunk',
+      id: 'criblvision-unhealthy-to-splunk',
       group: 'default',
       condition: 'unhealthy-dest',
       disabled: false,
@@ -840,12 +840,12 @@ function loadDemoAlerts(): NotificationWithGroup[] {
       targetConfigs: [
         {
           id: 'system_email',
-          conf: { subject: '[Vitals] to-splunk-dev unhealthy', emailRecipient: { to: 'ops@example.com' } },
+          conf: { subject: '[CriblVision] to-splunk-dev unhealthy', emailRecipient: { to: 'ops@example.com' } },
         },
       ],
     },
     {
-      id: 'vitals-nodata-win-events',
+      id: 'criblvision-nodata-win-events',
       group: 'Windows_Fleet',
       condition: 'no-data',
       disabled: true,
@@ -854,7 +854,7 @@ function loadDemoAlerts(): NotificationWithGroup[] {
       targetConfigs: [
         {
           id: 'system_email',
-          conf: { subject: '[Vitals] win-data-gen silent', emailRecipient: { to: 'ops@example.com' } },
+          conf: { subject: '[CriblVision] win-data-gen silent', emailRecipient: { to: 'ops@example.com' } },
         },
       ],
     },

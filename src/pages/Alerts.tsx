@@ -17,7 +17,7 @@ import {
 import type { CriblNotification, NotificationTarget } from '../api/types';
 import { Card, StatTile, Loading, ErrorBanner, HealthBadge } from '../components/ui';
 
-// The native Cribl notification conditions Vitals can manage. Cribl's leader
+// The native Cribl notification conditions CriblVision can manage. Cribl's leader
 // evaluates these server-side and delivers email through the SMTP target, so
 // alerts fire even when nobody has the dashboard open.
 interface ConditionDef {
@@ -120,7 +120,7 @@ export function Alerts() {
     if (!name) return setFormError(`Pick a ${condDef.object} to watch.`);
     if (!to.trim()) return setFormError('Enter a recipient email address.');
     const n: CriblNotification = {
-      id: slugify(`vitals-${condition}-${name}`),
+      id: slugify(`criblvision-${condition}-${name}`),
       condition,
       disabled: false,
       targets: ['system_email'],
@@ -135,7 +135,7 @@ export function Alerts() {
         {
           id: 'system_email',
           conf: {
-            subject: subject || `[Vitals] ${conditionLabel(condition)}: ${name}`,
+            subject: subject || `[CriblVision] ${conditionLabel(condition)}: ${name}`,
             emailRecipient: { to: to.trim(), ...(cc.trim() ? { cc: cc.trim() } : {}) },
           },
         },
@@ -399,7 +399,7 @@ export function Alerts() {
                 className="select"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                placeholder={`[Vitals] ${condDef.label}`}
+                placeholder={`[CriblVision] ${condDef.label}`}
               />
             </label>
 
